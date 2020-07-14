@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Map</title>
+</head>
+<body>
+<script type="text/javascript">
+    let myMap = new Map();
+    myMap.set(0, 'zero');
+    myMap.set(1, 'one');
+
+    for (let [key, value] of myMap) {
+        console.log(key + ' = ' + value);
+    }
+
+    for (let [key, value] of myMap.entries()) {
+        console.log(key + ' = ' + value);
+    }
+
+    myMap.forEach(function (value, key) {
+        console.log(key + ' = ' + value);
+    });
+
+
+
+    console.info(myMap.keys());
+    console.info(myMap.values());
+    console.info(myMap.size);
+
+    let m = class {a = 3; b = 4; c = 5};
+    //对象不能遍历
+    /*for (let [key, value] of m) {
+        console.info(key + ' = ' + value);
+    }*/
+    m.constructor = function (a = 3, b = 4, c = 5) {
+        this.a = a;
+        this.b = b;
+        this.c = c;
+    };
+
+    let mm = new m(30);
+    //console.info(mm);
+
+
+    let cs = class {
+        a = 3;
+        b = 4;
+        c = 5;
+
+        constructor(a = 3, b = 4, c = 5) {
+            this.a = a;
+            this.b = b;
+            this.c = c;
+        }
+
+        getC() {
+            return this.c;
+        }
+    };
+    let cc = new cs(30, 40, 50);
+    console.log(cc);
+    console.log(cc.getC());
+
+    let ar = new Array(2)
+    let arr = new Map([[9, 8], [7, 6]]);
+    let arr1 = new Map([[5, 6], [7, 8]]);
+    console.log(typeof ar);
+    let mg = new Map([...arr, ...arr1]);
+    console.log(mg);
+    mg.forEach(function (value, key) {
+        console.log(key + ' = ' + value);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Set</title>
+</head>
+<body>
+
+<script type="text/javascript">
+    let s = new Set();
+    console.info(s, typeof s);
+    s.add(5);
+    s.add({a: 3, b: 4})
+    s.add(5);
+    console.log(s, s.size);
+
+    let ss = new Set([1, 2, 2, 3, 4]);
+    console.log(ss);
+
+    let str = 'Hello ';
+    console.log(str.repeat(3));
+
+    let c = {
+        a: 10,
+        f() {
+            return 9;
+        },
+
+        fun() {
+            return 3;
+        },
+        fun1: function () {
+            return 5;
+        }
+    }
+</script>
+
+</body>
+</html>

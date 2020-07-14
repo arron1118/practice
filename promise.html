@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Promise Test</title>
+</head>
+<body>
+<script src="promise.js" type="text/javascript"></script>
+<script type="text/javascript">
+    console.info(Promise);
+    let p1 = new Promise(function (resolve, reject) {
+        resolve('success1');
+        resolve('success2');
+    });
+
+    let p2 = new Promise(function (resolve, reject) {
+        resolve('success3');
+        reject('reject');
+    });
+
+    p1.then(function (value) {
+        console.info(value);
+    });
+    p2.then(function (value) {
+        console.info(value);
+    });
+
+    console.info(Math.abs(-3.1));
+</script>
+</body>
+</html>

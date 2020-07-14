@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>函数</title>
+</head>
+<body>
+
+<script type="text/javascript">
+    //简洁的函数书写方法，第一个参数可以省略
+    let f = (i = '', j = '') => {
+        if (i != '' && j != '') {
+            i += j;
+        }
+
+        return j;
+    };
+
+    //console.log(f('', 55));
+
+    //不定型参，第一个参数可以省略
+    let f1 = (...args) => {
+        console.log(args);
+        console.log(args[1]);
+    }
+
+    f1('', 18);
+
+    let c = class {
+        a = null;
+        b = null;
+        d = 99;
+
+        constructor(a = 0, b = 5) {
+            this.a = a;
+            this.b = b;
+        }
+
+        getA() {
+            return this.a;
+        }
+
+        getSum() {
+            let sum = this.a + this.b + this.d;
+            return sum;
+        }
+    };
+
+    let cs = new c(100);
+    console.log(cs);
+    console.log(cs.getA());
+    console.log(cs.getSum());
+
+    let cl = {
+        a: 10,
+        getSum: function (i = 5) {
+            return i + this.a;
+        }
+    };
+    export {c};
+    //let cls = new cl();
+    console.log(cl.a);
+    console.log(cl.getSum(50));
+
+</script>
+</body>
+</html>

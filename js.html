@@ -4,12 +4,24 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
-<body>
+<body oncontextmenu="return false">
 
 <script type="text/javascript">
     let j = {name: 'arron', age: 18, sex: 1};
     let res = JSON.stringify(j, null, '\t');
     console.log(res);
+
+
+    ;!(function () {
+        //alert(555555);
+        try  {
+            alert("Result:" + eval(prompt("Enter an expression:","")));
+        } catch(exception) {
+            alert(exception);
+        }
+    })();
+
+
 </script>
 </body>
 </html>
