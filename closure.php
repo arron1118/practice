@@ -25,5 +25,12 @@ $a = intdiv(10, 20);
 
 echo $a;
 
+$str = <<<STR
+这是一个多行字符串定义
+$a
+STR;
+echo $str;
+
+
 
 
