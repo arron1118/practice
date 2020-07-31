@@ -18,7 +18,7 @@ test();
 include_once('./Db.php');
 $Db = Db::getInstance();
 
-$tables = $Db::query('show columns from member');
+$tables = $Db::getColumns('member');
 
 $tb = '<table border="1">';
 $th = '<tr>';
@@ -46,9 +46,15 @@ $tb .= $th . $tr . '</table>';
 echo $tb;
 
 
+$res = $Db::renameTable('config', 'system_config');
+if ($res) {
+    echo '已经成功将表config修改为system_config';
+} else {
+    echo '修改失败：' . $Db::getErrno() . ' ' . $Db::getError();
+}
 
-
-
+$res =$Db::getTables();
+var_dump($res);
 
 
 

@@ -3,10 +3,15 @@
 
 class Db
 {
-    private static $conn = null;
-    private static $connect_error = '';
-    private static $connect_errno = 0;
-    private static $instance = null;
+    private static $conn = null;    // 数据库连接资源
+    private static $error = '';     // 错误信息
+    private static $errno = 0;      // 错误号
+    private static $instance = null;    // Db实例
+
+    /**
+     * 数据库配置信息
+     * @var string[]
+     */
     private static $config = [
         'host' => 'localhost',
         'username' => 'root',
@@ -23,6 +28,11 @@ class Db
      */
     protected function __construct(){}
 
+    /**
+     * 连接数据库
+     * @param array $config
+     * @return string
+     */
     private static function connect($config = [])
     {
         if (empty($config)) {
@@ -34,11 +44,11 @@ class Db
         $conn = mysqli_connect(self::$config['host'], self::$config['username'], self::$config['password'], self::$config['dbname']);
         if ($conn) {
             self::$conn = $conn;
-            self::query('set charset ' . self::$config['charset']);
+            self::query('SET charset ' . self::$config['charset']);
         } else {
-            self::$connect_errno = mysqli_connect_errno();
-            self::$connect_error = mysqli_connect_error();
-            return self::$connect_error;
+            self::$errno = mysqli_connect_errno();
+            self::$error = mysqli_connect_error();
+            return self::$error;
         }
     }
 
@@ -53,19 +63,33 @@ class Db
             self::$instance = new self();
         }
         self::connect($config);
-        if (self::$connect_error) {
-            die('Connect Failed: ' . self::$connect_error);
+        if (self::$error) {
+            die('Connect Failed: ' . self::$error);
         }
 
         return self::$instance;
     }
 
+    /**
+     * @param $sql
+     * @return bool|mysqli_result
+     */
     public static function query($sql)
     {
-        return self::fetchAssoc(mysqli_query(self::$conn, $sql));
+        $res = mysqli_query(self::$conn, $sql);
 
+        if (!$res) {
+            self::$error = mysqli_error(self::$conn);
+            self::$errno = mysqli_errno(self::$conn);
+        }
+
+        return $res;
     }
 
+    /**
+     * @param array $data
+     * @return array
+     */
     private static function fetchAssoc($data = [])
     {
         $res = [];
@@ -74,7 +98,42 @@ class Db
                 $res[] = $row;
             }
         }
+
         return $res;
+    }
+
+    /**
+     * 获取所有表
+     * @return array
+     */
+    public static function getTables()
+    {
+        $sql = 'SHOW TABLES FROM ' . self::$config['dbname'];
+        $res = self::fetchAssoc(self::query($sql));
+        return array_column($res, 'Tables_in_' . self::$config['dbname']);
+    }
+
+    /**
+     * 获取表的列
+     * @param $tbName
+     * @return array
+     */
+    public static function getColumns($tbName)
+    {
+        $sql = 'SHOW COLUMNS FROM ' . $tbName;
+        return self::fetchAssoc(self::query($sql));
+    }
+
+    /**
+     * 修改表名
+     * @param $oldName
+     * @param $newName
+     * @return bool|mysqli_result
+     */
+    public static function renameTable($oldName, $newName)
+    {
+        $sql = 'ALTER TABLE ' . $oldName . ' RENAME TO ' . $newName;
+        return self::query($sql);
     }
 
     public static function getConfig()
@@ -82,14 +141,22 @@ class Db
         return self::$config;
     }
 
+    /**
+     * 获取错误信息
+     * @return string
+     */
     public static function getError()
     {
-        return self::$connect_error;
+        return self::$error;
     }
 
+    /**
+     * 获取错误号
+     * @return int
+     */
     public static function getErrno()
     {
-        return self::$connect_errno;
+        return self::$errno;
     }
 
 }
