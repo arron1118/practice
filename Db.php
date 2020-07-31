@@ -103,14 +103,21 @@ class Db
     }
 
     /**
-     * 获取所有表
+     * 获取所有表信息
      * @return array
      */
     public static function getTables()
     {
-        $sql = 'SHOW TABLES FROM ' . self::$config['dbname'];
-        $res = self::fetchAssoc(self::query($sql));
-        return array_column($res, 'Tables_in_' . self::$config['dbname']);
+        $dbname = self::$config['dbname'];
+        $sql = <<<SQL
+SELECT table_name, table_rows, engine, table_type, table_collation, create_time, update_time,
+CONCAT(ROUND((data_length + index_length) / 1024 / 1024, 2), 'MB') data_size, table_comment
+FROM
+    information_schema.tables
+WHERE table_schema = "$dbname"
+SQL;
+echo $sql;
+        return self::fetchAssoc(self::query($sql));
     }
 
     /**
@@ -120,7 +127,11 @@ class Db
      */
     public static function getColumns($tbName)
     {
-        $sql = 'SHOW COLUMNS FROM ' . $tbName;
+        $dbname = self::$config['dbname'];
+        $sql = <<<SQL
+SELECT column_name, column_type, column_key, column_comment FROM information_schema.columns WHERE table_schema = "$dbname" AND table_name = "$tbName"
+SQL;
+        
         return self::fetchAssoc(self::query($sql));
     }
 
