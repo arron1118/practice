@@ -1,9 +1,8 @@
 <?php
-include_once('init.php');
-include_once('./common.php');
+include_once('core/init.php');
 header('Content-Type: text/html; charset=utf-8');
+referer();
 
-echo '<pre>';
 
 # php 对大小写不敏感，所以可以正常运行
 // 注释
@@ -16,7 +15,7 @@ function TEST()
 }
 test();
 
-include_once('./Db.php');
+include_once('./core/driver/db/Db.php');
 $Db = Db::getInstance();
 
 $cols = $Db::getColumns('member');
@@ -37,8 +36,6 @@ $res = dataToTable($tables);
 echo $res;
 
 
-
-echo '</pre>';
 
 
 

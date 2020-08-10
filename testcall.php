@@ -1,5 +1,5 @@
 <?php
-require './voicecall.php';
+require CORE_PATH . '/voicecall.php';
 
 $cl = new VoiceCall();
 // 设置appkey

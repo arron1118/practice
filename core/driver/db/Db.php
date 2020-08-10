@@ -36,7 +36,7 @@ class Db
     private static function connect($config = [])
     {
         if (empty($config)) {
-            $config = include_once('./db.config.php');
+            $config = include_once(CONFIG_PATH . '/db.config.php');
         }
 
         self::$config = array_merge(self::$config, $config);
