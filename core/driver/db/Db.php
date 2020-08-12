@@ -7,6 +7,7 @@ class Db
     private static $error = '';     // 错误信息
     private static $errno = 0;      // 错误号
     private static $instance = null;    // Db实例
+    private static $lastQuery = ''; // 最后一条 query 语句
 
     /**
      * 数据库配置信息
@@ -15,8 +16,8 @@ class Db
     private static $config = [
         'host' => 'localhost',
         'username' => 'root',
-        'password' => 'root',
-        'dbname' => 'practice',
+        'password' => '',
+        'dbname' => '',
         'port' => '3306',
         'charset' => 'utf8',
         'prefix' => ''
@@ -31,16 +32,10 @@ class Db
     /**
      * 连接数据库
      * @param array $config
-     * @return string
+     * @return bool|string
      */
     private static function connect($config = [])
     {
-        if (empty($config)) {
-            $config = include_once(CONFIG_PATH . '/db.config.php');
-        }
-
-        self::$config = array_merge(self::$config, $config);
-
         $conn = mysqli_connect(self::$config['host'], self::$config['username'], self::$config['password'], self::$config['dbname']);
         if ($conn) {
             self::$conn = $conn;
@@ -50,6 +45,8 @@ class Db
             self::$error = mysqli_connect_error();
             return self::$error;
         }
+
+        return true;
     }
 
     /**
@@ -59,12 +56,21 @@ class Db
      */
     public static function getInstance($config = [])
     {
-        if (!self::$instance) {
-            self::$instance = new self();
+        /**
+         * 判断是否被实例化过，防止已经配置信息被重新覆盖
+         */
+        if (empty($config) && is_null(self::$instance)) {
+            $config = include_once(CONFIG_PATH . '/db.config.php');
         }
+        self::$config = array_merge(self::$config, $config);
         self::connect($config);
         if (self::$error) {
-            die('Connect Failed: ' . self::$error);
+            showTip('Connect Failed', '[' . self::$errno . '] ' . self::$error);
+            die();
+        }
+
+        if (!self::$instance) {
+            self::$instance = new self();
         }
 
         return self::$instance;
@@ -76,8 +82,8 @@ class Db
      */
     public static function query($sql)
     {
+        self::$lastQuery = $sql;
         $res = mysqli_query(self::$conn, $sql);
-
         if (!$res) {
             self::$error = mysqli_error(self::$conn);
             self::$errno = mysqli_errno(self::$conn);
@@ -116,7 +122,7 @@ FROM
     information_schema.tables
 WHERE table_schema = "$dbname"
 SQL;
-echo $sql;
+
         return self::fetchAssoc(self::query($sql));
     }
 
@@ -128,6 +134,7 @@ echo $sql;
     public static function getColumns($tbName)
     {
         $dbname = self::$config['dbname'];
+        $tbName = self::$config['prefix'] . $tbName;
         $sql = <<<SQL
 SELECT column_name, column_type, column_key, column_comment FROM information_schema.columns WHERE table_schema = "$dbname" AND table_name = "$tbName"
 SQL;
@@ -143,13 +150,54 @@ SQL;
      */
     public static function renameTable($oldName, $newName)
     {
-        $sql = 'ALTER TABLE ' . $oldName . ' RENAME TO ' . $newName;
+        $sql = 'ALTER TABLE ' . self::$config['prefix'] . $oldName . ' RENAME TO ' . self::$config['prefix'] . $newName;
         return self::query($sql);
     }
 
+    /**
+     * 配置数据库信息
+     *
+     * @param $var
+     * @param string $value
+     * @return bool
+     */
+    public static function setConfig($var, $value = '')
+    {
+        if (is_string($var)) {
+            if (empty($value)) {
+                return true;
+            }
+            self::$config[$var] = $value;
+        } elseif (is_array($var)) {
+            $keys = array_keys(self::$config);
+            foreach ($var as $key => $val) {
+                if (in_array($key, $keys)) {
+                    self::$config[$key] = $val;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 获取配置信息
+     * @return string[]
+     */
     public static function getConfig()
     {
         return self::$config;
+    }
+
+    /**
+     * 设置数据库
+     * @param $name
+     * @return null
+     */
+    public static function dbname($name)
+    {
+        self::$config['dbname'] = $name;
+        return self::getInstance();
     }
 
     /**
@@ -168,6 +216,15 @@ SQL;
     public static function getErrno()
     {
         return self::$errno;
+    }
+
+    /**
+     * 获取最后一条Query语句
+     * @return string
+     */
+    public static function getLastQuery()
+    {
+        return self::$lastQuery;
     }
 
 }

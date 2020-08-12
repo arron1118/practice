@@ -13,3 +13,5 @@ echo '<link rel="stylesheet" href="' . PUBLIC_PATH . '/static/bootstrap/bootstra
 echo '<script type="text/javascript" src="' . PUBLIC_PATH . '/static/bootstrap/bootstrap.min.js"></script>';
 
 include_once ROOT_PATH . '/common/function.php';
+
+include_once CORE_PATH . '/driver/db/Db.php';

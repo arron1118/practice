@@ -15,23 +15,24 @@ function TEST()
 }
 test();
 
-include_once('./core/driver/db/Db.php');
-$Db = Db::getInstance();
-
-$cols = $Db::getColumns('member');
+$db = Db::getInstance();
+$db::dbname('555gk');
+db::setConfig('prefix', '35gk_');
+$cols = $db::getColumns('users');
 $res = dataToTable($cols);
 echo $res;
 
-
-
-$res = $Db::renameTable('config', 'system_config');
+$oldName = 'system_config';
+$newName = 'config';
+$res = $db::renameTable($oldName, $newName);
 if ($res) {
-    echo '已经成功将表config修改为system_config';
+    $content = '已经成功将表' . $oldName . '修改为' . $newName;
 } else {
-    echo '修改失败：' . $Db::getErrno() . ' ' . $Db::getError();
+    $content = '[' . $db::getErrno() . '] ' . $db::getError();
 }
+showTip('Tip', $content);
 
-$tables =$Db::getTables();
+$tables =$db::getTables();
 $res = dataToTable($tables);
 echo $res;
 

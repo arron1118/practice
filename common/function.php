@@ -58,7 +58,6 @@ function referer()
 {
     $ref = $_SERVER['HTTP_REFERER'];
     $html = <<<HTML
-
 <div class="container">
     <div class="row">
         <div class="col-lg-12">
@@ -68,7 +67,27 @@ function referer()
         </div>
     </div>
 </div>
+HTML;
+    echo $html;
+}
 
+function showTip($title = 'Tip', $content)
+{
+    $html = <<<HTML
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">$title</h3>
+                </div>
+                <div class="panel-body">
+                    $content
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 HTML;
     echo $html;
 }
